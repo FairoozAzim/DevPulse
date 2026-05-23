@@ -1,4 +1,5 @@
 import { pool } from "../../db";
+import { getNextStatus } from "../../utils/issueWorkflow";
 import type { IIssue } from "./issue.interface";
 import bcrypt from "bcryptjs";
 
@@ -102,6 +103,46 @@ const getSingleIssueFromDB = async(id : string) => {
   
     return structuredResult;
 }
+const updateIssueFromDB = async(id : string, payload : IIssue, userId : number, userRole : string)=> {
+    const {title, description, type, status} = payload;
+    const issueInfo = await pool.query(`
+        SELECT status, reporter_id FROM issues WHERE id=$1 
+        `, [id]);
+    if (issueInfo.rows.length === 0) {
+        throw new Error("Issue not found");
+    }
+
+    const {status : current_status, reporter_id} = issueInfo.rows[0]
+
+    if (userRole === 'contributor' && reporter_id !== userId) {
+        throw new Error("You can only update your own issues");
+    }
+    // if (userRole === 'contributor' && current_status !== 'open') {
+    //     throw new Error("Permission Denied! Issue is already in progress.");
+    // }
+
+     const finalStatus = getNextStatus(
+        current_status,
+        userRole,
+        status
+    );
+
+
+    const result = await pool.query(`
+        UPDATE issues SET 
+        title = COALESCE($1, title), 
+        description = COALESCE($2, description), 
+        type = COALESCE($3, type), 
+        status = COALESCE($4, status),
+        updated_at = NOW()
+        WHERE id=$5 
+        RETURNING *
+        `, [title, description, type, finalStatus, id]);
+    console.log(result);
+    
+    return result;
+}
+
 const deleteIssueFromDB = async(id : string) => {
     const result = await pool.query(`
         DELETE  FROM issues WHERE id=$1
@@ -113,5 +154,6 @@ export const issueService = {
     createIssueIntoDB,
     getAllIssuesFromDB,
     getSingleIssueFromDB,
+    updateIssueFromDB,
     deleteIssueFromDB
 }

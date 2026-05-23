@@ -20,7 +20,6 @@ app.use(logger);
 
 app.use("/api/auth", userRoute)
 app.use("/api/auth", authRoute)
-app.use("/api/issues", userRoute)
 app.use("/api/issues", issueRoute)
 app.use("/api/issues/:id",issueRoute)
 
