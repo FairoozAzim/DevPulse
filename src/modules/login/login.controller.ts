@@ -5,7 +5,6 @@ import sendResponse from "../../utils/sendResponse";
 const loginUser = async(req : Request, res : Response) => {
     try {
         const result = await loginService.loginUserIntoDB(req.body);
-         res.status(200).json()
         sendResponse(res, {
             statusCode : 200,
             success : true,

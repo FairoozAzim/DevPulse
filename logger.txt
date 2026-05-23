@@ -14,3 +14,5 @@ Method => GET - Time -> 1779547251875 - URL -> /api/issues?status=open
 Method => GET - Time -> 1779547276145 - URL -> /api/issues?type=bug
 
 Method => GET - Time -> 1779547303331 - URL -> /api/issues?status=open&type=bug&sort=oldest
+
+Method => GET - Time -> 1779548869161 - URL -> /api/issues?status=open&type=bug&sort=oldest
