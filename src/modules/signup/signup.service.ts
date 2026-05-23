@@ -1,4 +1,5 @@
 import { pool } from "../../db";
+import AppError from "../../utils/sendError";
 import type { IUser } from "./signup.interface";
 import bcrypt from "bcryptjs";
 
@@ -10,7 +11,7 @@ const createUserIntoDB = async(payload : IUser) => {
     const allowedRoles = ['contributor', 'maintainer'];
     const userRole = role || 'contributor';
     if (!allowedRoles.includes(userRole)) {
-        throw new Error("Invalid Role!");
+        throw new AppError(400,"Invalid Role!");
     }
 
     const result = await pool.query(`

@@ -16,3 +16,33 @@ Method => GET - Time -> 1779547276145 - URL -> /api/issues?type=bug
 Method => GET - Time -> 1779547303331 - URL -> /api/issues?status=open&type=bug&sort=oldest
 
 Method => GET - Time -> 1779548869161 - URL -> /api/issues?status=open&type=bug&sort=oldest
+
+Method => POST - Time -> 1779550894835 - URL -> /api/auth/login
+
+Method => POST - Time -> 1779551152230 - URL -> /api/auth/login
+
+Method => POST - Time -> 1779551161446 - URL -> /api/auth/login
+
+Method => POST - Time -> 1779551164709 - URL -> /api/auth/login
+
+Method => GET - Time -> 1779551622406 - URL -> /api/issues?status=resolved
+
+Method => GET - Time -> 1779551642083 - URL -> /api/issues?status=open
+
+Method => GET - Time -> 1779551783106 - URL -> /api/issues/30
+
+Method => DELETE - Time -> 1779552035103 - URL -> /api/issues/20
+
+Method => DELETE - Time -> 1779552086270 - URL -> /api/issues/5
+
+Method => DELETE - Time -> 1779552158123 - URL -> /api/issues/5
+
+Method => DELETE - Time -> 1779552163379 - URL -> /api/issues/50
+
+Method => DELETE - Time -> 1779552987463 - URL -> /api/issues/50
+
+Method => DELETE - Time -> 1779553062592 - URL -> /api/issues/50
+
+Method => DELETE - Time -> 1779553190755 - URL -> /api/issues/50
+
+Method => DELETE - Time -> 1779553464156 - URL -> /api/issues/3

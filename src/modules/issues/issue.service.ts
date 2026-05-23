@@ -1,5 +1,8 @@
 import { pool } from "../../db";
+import globalErrorHandler from "../../middleware/globalErrorHandler";
 import { getNextStatus } from "../../utils/issueWorkflow";
+import AppError from "../../utils/sendError";
+import sendResponse from "../../utils/sendResponse";
 import type { IIssue } from "./issue.interface";
 import bcrypt from "bcryptjs";
 
@@ -13,12 +16,13 @@ const createIssueIntoDB = async(payload : IIssue, userId : number) => {
     const issueStatus = status || 'open';
 
      if(!allowedTypes.includes(type)){
-        throw new Error("Invalid type! Must be either 'bug' or 'feature_request'")
+        throw new AppError(400,"Invalid type! Must be either 'bug' or 'feature_request'")
+
 
     }
 
     if (!allowedStatus.includes(issueStatus)) {
-        throw new Error("Invalid Status!");
+        throw new AppError(400, "Invalid Status!");
     }
    
     const result = await pool.query(`
@@ -57,6 +61,9 @@ const getAllIssuesFromDB = async(query : any) => {
 
     sql += ` ORDER BY ${orderBy}`;
     const result = await pool.query(sql, values);
+    if (result.rows.length === 0 ){
+        throw new AppError(404,"No Issues Found!")
+    }
 
     const issues = result.rows;
     const reporterIds = [
@@ -105,6 +112,10 @@ const getSingleIssueFromDB = async(id : string) => {
      const result = await pool.query(`
         SELECT * FROM issues WHERE id=$1
         `,[id]);
+
+    if (result.rows.length === 0 ){
+        throw new AppError(404, "No Issue Found!")
+    }
      const {reporter_id, created_at, updated_at, ...rest} = result.rows[0];
      const reporterInfo = await pool.query(`
         SELECT id, name, role FROM users WHERE id=$1 
@@ -133,17 +144,18 @@ const updateIssueFromDB = async(id : string, payload : IIssue, userId : number, 
     const issueInfo = await pool.query(`
         SELECT status, reporter_id FROM issues WHERE id=$1 
         `, [id]);
+    
     if (issueInfo.rows.length === 0) {
-        throw new Error("Issue not found");
+        throw new AppError(404, "Issue not found");
     }
 
     const {status : current_status, reporter_id} = issueInfo.rows[0]
 
     if (userRole === 'contributor' && reporter_id !== userId) {
-        throw new Error("You can only update your own issues");
+        throw new AppError(403, "Permission Denied! You can only update your own issues");
     }
     if (userRole === 'contributor' && current_status !== 'open') {
-        throw new Error("Permission Denied! Issue is already in progress.");
+        throw new AppError(403, "Permission Denied! Issue is already in progress.");
     }
 
      const finalStatus = getNextStatus(
@@ -172,6 +184,9 @@ const deleteIssueFromDB = async(id : string) => {
     const result = await pool.query(`
         DELETE  FROM issues WHERE id=$1
         `,[id]);
+    if (result.rowCount === 0) {
+        throw new AppError(404,"Issue not found!");
+    }
     return result;
 
 }

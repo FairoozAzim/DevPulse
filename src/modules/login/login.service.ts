@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken"
 import { pool } from "../../db";
 import config from "../../config";
+import AppError from "../../utils/sendError";
 
 const loginUserIntoDB = async(payload : {email :string, password: string}) => {
 
@@ -11,7 +12,7 @@ const userData = await pool.query(`
     SELECT * FROM users WHERE email=$1
     `,[email]);
     if(userData.rows.length === 0){
-        throw new Error("Invalid credentials");
+        throw new AppError(400, "Invalid credentials");
 
     };
     const user= userData.rows[0];
@@ -19,7 +20,7 @@ const userData = await pool.query(`
     const matchPassword = await bcrypt.compare(password, user.password);
     
     if(!matchPassword){
-        throw new Error("Invalid Credentials!");
+        throw new AppError(400, "Invalid Credentials!");
     }
     const jwtPayload = {
         id : user.id,
@@ -28,7 +29,12 @@ const userData = await pool.query(`
     }
 
     const accessToken = jwt.sign(jwtPayload, config.secret as string, {expiresIn : "1d"})
-    return {accessToken};
+    delete user.password;
+    const data = {
+        "token" : accessToken,
+        "user": user
+    }
+    return {data};
 
 
 }
