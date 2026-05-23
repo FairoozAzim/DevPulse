@@ -117,9 +117,9 @@ const updateIssueFromDB = async(id : string, payload : IIssue, userId : number, 
     if (userRole === 'contributor' && reporter_id !== userId) {
         throw new Error("You can only update your own issues");
     }
-    // if (userRole === 'contributor' && current_status !== 'open') {
-    //     throw new Error("Permission Denied! Issue is already in progress.");
-    // }
+    if (userRole === 'contributor' && current_status !== 'open') {
+        throw new Error("Permission Denied! Issue is already in progress.");
+    }
 
      const finalStatus = getNextStatus(
         current_status,

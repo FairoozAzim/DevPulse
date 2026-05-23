@@ -1,9 +1,9 @@
 import type { Request, Response } from "express"
-import { authService } from "./auth.service"
+import { loginService } from "./login.service"
 
 const loginUser = async(req : Request, res : Response) => {
     try {
-        const result = await authService.loginUserIntoDB(req.body);
+        const result = await loginService.loginUserIntoDB(req.body);
          res.status(200).json({
             success : true,
             message: "Logged In Successfully",
@@ -20,6 +20,6 @@ const loginUser = async(req : Request, res : Response) => {
 
 }
 }
-export const authController = {
+export const loginController = {
     loginUser
 }

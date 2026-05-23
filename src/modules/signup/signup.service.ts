@@ -1,5 +1,5 @@
 import { pool } from "../../db";
-import type { IUser } from "./user.interface";
+import type { IUser } from "./signup.interface";
 import bcrypt from "bcryptjs";
 
 const createUserIntoDB = async(payload : IUser) => {
@@ -27,7 +27,7 @@ const getAllUsersFromDB = async() => {
     return result;
 }
 
-export const userService = {
+export const signupService = {
     createUserIntoDB,
     getAllUsersFromDB
 }

@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { pool } from "../../db";
-import { userService } from "./user.service";
+import { signupService } from "./signup.service";
 
 const createUser = async (req: Request, res:Response) => {
     // const {name, email, password, role} = req.body; 
@@ -15,7 +15,7 @@ const createUser = async (req: Request, res:Response) => {
     //     });
     // }
     try {
-       const result = await userService.createUserIntoDB(req.body)
+       const result = await signupService.createUserIntoDB(req.body)
        res.status(201).json({
             success : true,
             message: "User registered successfully",
@@ -32,7 +32,7 @@ const createUser = async (req: Request, res:Response) => {
 };
 const getUsers = async(req : Request, res : Response) => {
   try {
-    const result = await userService.getAllUsersFromDB();
+    const result = await signupService.getAllUsersFromDB();
     res.status(200).json({
         success: true,
         message: "Users retrieved successfully",
@@ -47,7 +47,7 @@ const getUsers = async(req : Request, res : Response) => {
     
   }
 } 
-export const userController = {
+export const signupController = {
     createUser,
     getUsers
 }

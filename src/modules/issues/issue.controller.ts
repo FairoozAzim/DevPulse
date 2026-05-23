@@ -70,6 +70,7 @@ const updateIssue = async(req : Request, res: Response) => {
        res.status(200).json({
            success: true,
            message: "Issue updated successfully",
+           data: result.rows[0]
        });
      } catch (error:any) {
        res.status(500).json({

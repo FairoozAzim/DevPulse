@@ -33,6 +33,6 @@ console.log(email);
 
 }
 
-export const authService = {
+export const loginService = {
     loginUserIntoDB
 }

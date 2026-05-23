@@ -5,8 +5,8 @@ import config from "./config";
 
 import { initDB, pool } from "./db";
 import {Pool} from "pg";
-import { userRoute } from "./modules/users/user.route";
-import { authRoute } from "./modules/auth/auth.route";
+import { signupRoute } from "./modules/signup/signup.route";
+import { loginRoute } from "./modules/login/login.route";
 import logger from "./middleware/logger";
 import { issueRoute } from "./modules/issues/issue.route";
 
@@ -18,8 +18,8 @@ app.use(express.text());
 app.use(express.urlencoded({extended :true}));
 app.use(logger);
 
-app.use("/api/auth", userRoute)
-app.use("/api/auth", authRoute)
+app.use("/api/auth", signupRoute)
+app.use("/api/auth", loginRoute)
 app.use("/api/issues", issueRoute)
 app.use("/api/issues/:id",issueRoute)
 

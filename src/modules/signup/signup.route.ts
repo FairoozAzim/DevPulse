@@ -1,12 +1,12 @@
 import { Router} from "express";
-import { userController } from "./user.controller";
+import { signupController } from "./signup.controller";
 import auth from "../../middleware/auth";
 
 const router = Router();
 
-router.post("/signup", userController.createUser)
+router.post("/signup", signupController.createUser)
 // router.get("/getUsers", auth(), userController.getUsers)
 
 
 
-export const userRoute = router
+export const signupRoute = router
