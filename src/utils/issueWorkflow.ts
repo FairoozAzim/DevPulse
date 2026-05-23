@@ -23,7 +23,7 @@ export const getNextStatus = (
 ) => {
     
     const rules = issueWorkflow[currentStatus];
-    console.log(rules);
+    // console.log(rules);
 
     if (!rules) {
         throw new Error("Invalid current status");

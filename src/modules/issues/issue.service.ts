@@ -138,7 +138,7 @@ const updateIssueFromDB = async(id : string, payload : IIssue, userId : number, 
         WHERE id=$5 
         RETURNING *
         `, [title, description, type, finalStatus, id]);
-    console.log(result);
+    // console.log(result);
     
     return result;
 }

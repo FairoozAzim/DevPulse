@@ -6,7 +6,12 @@ export const USER_ROLE = {
 
 export type ROLES = "contributor" | "maintainer";
 
-export type IssueStatus =
-    | 'open'
-    | 'in_progress'
-    | 'resolved';
+export type IssueStatus = 'open' | 'in_progress' | 'resolved';
+
+export type TResponse <T>= {
+   statusCode : number;
+   success : boolean;
+   message : string;
+   data?: T;
+   error?: any;
+}

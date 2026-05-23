@@ -2,3 +2,7 @@
 Method => GET - Time -> 1779541809826 - URL -> /api/issues
 
 Method => POST - Time -> 1779541820221 - URL -> /api/auth/login
+
+Method => PATCH - Time -> 1779542888262 - URL -> /api/issues/5
+
+Method => POST - Time -> 1779543795098 - URL -> /api/auth/signup

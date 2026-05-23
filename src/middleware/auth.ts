@@ -8,8 +8,8 @@ import type { ROLES } from "../types";
 
 const auth = (...roles: ROLES[]) => {
     return async (req: Request, res: Response, next: NextFunction) => {
-      
-    const token = req.headers.authorization;
+        try {
+              const token = req.headers.authorization;
 
     if(!token){
         res.status(401).json({
@@ -42,7 +42,12 @@ const auth = (...roles: ROLES[]) => {
     req.user = decoded
 
     next();
-}
+    } 
+     catch (error) {
+        next(error)
+    }
+      
+  }
 };
 
 export default auth;

@@ -6,8 +6,8 @@ import config from "../../config";
 const loginUserIntoDB = async(payload : {email :string, password: string}) => {
 
 const {email, password} = payload;
-console.log(email);
-  const userData = await pool.query(`
+
+const userData = await pool.query(`
     SELECT * FROM users WHERE email=$1
     `,[email]);
     if(userData.rows.length === 0){
