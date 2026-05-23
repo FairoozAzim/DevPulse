@@ -6,3 +6,11 @@ Method => POST - Time -> 1779541820221 - URL -> /api/auth/login
 Method => PATCH - Time -> 1779542888262 - URL -> /api/issues/5
 
 Method => POST - Time -> 1779543795098 - URL -> /api/auth/signup
+
+Method => GET - Time -> 1779547230114 - URL -> /api/issues
+
+Method => GET - Time -> 1779547251875 - URL -> /api/issues?status=open
+
+Method => GET - Time -> 1779547276145 - URL -> /api/issues?type=bug
+
+Method => GET - Time -> 1779547303331 - URL -> /api/issues?status=open&type=bug&sort=oldest

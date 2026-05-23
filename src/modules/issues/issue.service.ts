@@ -29,11 +29,36 @@ const createIssueIntoDB = async(payload : IIssue, userId : number) => {
     return result;
 };
 
-const getAllIssuesFromDB = async() => {
-     const result = await pool.query(`
+const getAllIssuesFromDB = async(query : any) => {
+       const { sort = 'newest', type, status } = query;
+      let sql = `
         SELECT * FROM issues
-        `);
-     const issues = result.rows;
+    `;
+
+    const conditions: string[] = [];
+    const values: any[] = [];
+    if (status) {
+        values.push(status);
+        conditions.push(`status = $${values.length}`);
+    }
+    if (type) {
+        values.push(type);
+        conditions.push(`type = $${values.length}`);
+    }
+    if (conditions.length > 0) {
+        sql += ` WHERE ` + conditions.join(' AND ');
+    }
+
+    let orderBy = 'created_at DESC'; // default = newest
+
+    if (sort === 'oldest') {
+        orderBy = 'created_at ASC';
+    }
+
+    sql += ` ORDER BY ${orderBy}`;
+    const result = await pool.query(sql, values);
+
+    const issues = result.rows;
     const reporterIds = [
         ...new Set(
             issues.map(issue => issue.reporter_id)
