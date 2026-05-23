@@ -9,6 +9,9 @@ const createUserIntoDB = async(payload : IUser) => {
 
     const allowedRoles = ['contributor', 'maintainer'];
     const userRole = role || 'contributor';
+    if (!allowedRoles.includes(userRole)) {
+        throw new Error("Invalid Role!");
+    }
 
     const result = await pool.query(`
         INSERT INTO users (name, email, password, role) VALUES($1, $2, $3, $4) 
