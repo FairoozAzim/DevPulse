@@ -10,6 +10,7 @@ const createUserIntoDB = async(payload : IUser) => {
 
     const allowedRoles = ['contributor', 'maintainer'];
     const userRole = role || 'contributor';
+    //role validation for max safety
     if (!allowedRoles.includes(userRole)) {
         throw new AppError(400,"Invalid Role!");
     }

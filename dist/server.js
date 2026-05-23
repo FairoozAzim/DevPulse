@@ -75,6 +75,16 @@ import "pg";
 // src/modules/signup/signup.route.ts
 import { Router } from "express";
 
+// src/utils/sendError.ts
+var AppError = class extends Error {
+  statusCode;
+  constructor(statusCode, message) {
+    super(message);
+    this.statusCode = statusCode;
+  }
+};
+var sendError_default = AppError;
+
 // src/modules/signup/signup.service.ts
 import bcrypt from "bcryptjs";
 var createUserIntoDB = async (payload) => {
@@ -83,7 +93,7 @@ var createUserIntoDB = async (payload) => {
   const allowedRoles = ["contributor", "maintainer"];
   const userRole = role || "contributor";
   if (!allowedRoles.includes(userRole)) {
-    throw new Error("Invalid Role!");
+    throw new sendError_default(400, "Invalid Role!");
   }
   const result = await pool.query(`
         INSERT INTO users (name, email, password, role) VALUES($1, $2, $3, $4) 
@@ -215,13 +225,13 @@ var loginUserIntoDB = async (payload) => {
     SELECT * FROM users WHERE email=$1
     `, [email]);
   if (userData.rows.length === 0) {
-    throw new Error("Invalid credentials");
+    throw new sendError_default(400, "Invalid credentials");
   }
   ;
   const user = userData.rows[0];
   const matchPassword = await bcrypt2.compare(password, user.password);
   if (!matchPassword) {
-    throw new Error("Invalid Credentials!");
+    throw new sendError_default(400, "Invalid Credentials!");
   }
   const jwtPayload = {
     id: user.id,
@@ -229,7 +239,12 @@ var loginUserIntoDB = async (payload) => {
     role: user.role
   };
   const accessToken = jwt2.sign(jwtPayload, config_default.secret, { expiresIn: "1d" });
-  return { accessToken };
+  delete user.password;
+  const data = {
+    "token": accessToken,
+    "user": user
+  };
+  return { data };
 };
 var loginService = {
   loginUserIntoDB
@@ -279,6 +294,17 @@ var logger_default = logger;
 // src/modules/issues/issue.route.ts
 import { Router as Router3 } from "express";
 
+// src/middleware/globalErrorHandler.ts
+var globalErrorHandler = (err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+    error: err
+  });
+};
+var globalErrorHandler_default = globalErrorHandler;
+
 // src/utils/issueWorkflow.ts
 var issueWorkflow = {
   open: {
@@ -320,10 +346,10 @@ var createIssueIntoDB = async (payload, userId) => {
   const allowedTypes = ["bug", "feature_request"];
   const issueStatus = status || "open";
   if (!allowedTypes.includes(type)) {
-    throw new Error("Invalid type! Must be either 'bug' or 'feature_request'");
+    throw new sendError_default(400, "Invalid type! Must be either 'bug' or 'feature_request'");
   }
   if (!allowedStatus.includes(issueStatus)) {
-    throw new Error("Invalid Status!");
+    throw new sendError_default(400, "Invalid Status!");
   }
   const result = await pool.query(`
         INSERT INTO issues (title, description, type, status, reporter_id) VALUES($1, $2, $3, $4, $5) 
@@ -355,6 +381,9 @@ var getAllIssuesFromDB = async (query) => {
   }
   sql += ` ORDER BY ${orderBy}`;
   const result = await pool.query(sql, values);
+  if (result.rows.length === 0) {
+    throw new sendError_default(404, "No Issues Found!");
+  }
   const issues = result.rows;
   const reporterIds = [
     ...new Set(
@@ -394,6 +423,9 @@ var getSingleIssueFromDB = async (id) => {
   const result = await pool.query(`
         SELECT * FROM issues WHERE id=$1
         `, [id]);
+  if (result.rows.length === 0) {
+    throw new sendError_default(404, "No Issue Found!");
+  }
   const { reporter_id, created_at, updated_at, ...rest } = result.rows[0];
   const reporterInfo = await pool.query(`
         SELECT id, name, role FROM users WHERE id=$1 
@@ -420,14 +452,14 @@ var updateIssueFromDB = async (id, payload, userId, userRole) => {
         SELECT status, reporter_id FROM issues WHERE id=$1 
         `, [id]);
   if (issueInfo.rows.length === 0) {
-    throw new Error("Issue not found");
+    throw new sendError_default(404, "Issue not found");
   }
   const { status: current_status, reporter_id } = issueInfo.rows[0];
   if (userRole === "contributor" && reporter_id !== userId) {
-    throw new Error("You can only update your own issues");
+    throw new sendError_default(403, "Permission Denied! You can only update your own issues");
   }
   if (userRole === "contributor" && current_status !== "open") {
-    throw new Error("Permission Denied! Issue is already in progress.");
+    throw new sendError_default(403, "Permission Denied! Issue is already in progress.");
   }
   const finalStatus = getNextStatus(
     current_status,
@@ -450,6 +482,9 @@ var deleteIssueFromDB = async (id) => {
   const result = await pool.query(`
         DELETE  FROM issues WHERE id=$1
         `, [id]);
+  if (result.rowCount === 0) {
+    throw new sendError_default(404, "Issue not found!");
+  }
   return result;
 };
 var issueService = {
@@ -543,7 +578,7 @@ var deleteIssue = async (req, res) => {
   try {
     const result = await issueService.deleteIssueFromDB(id);
     sendResponse_default(res, {
-      statusCode: 200,
+      statusCode: 204,
       success: true,
       message: "Issue deleted successfully"
     });
@@ -578,15 +613,6 @@ router3.get("/:id", issueController.getSingleIssue);
 router3.patch("/:id", auth_default(USER_ROLE.contributor, USER_ROLE.maintainer), issueController.updateIssue);
 router3.delete("/:id", auth_default(USER_ROLE.maintainer), issueController.deleteIssue);
 var issueRoute = router3;
-
-// src/middleware/globalErrorHandler.ts
-var globalErrorHandler = (err, req, res, next) => {
-  res.status(500).json({
-    success: false,
-    message: err.message || "Internal Server Error"
-  });
-};
-var globalErrorHandler_default = globalErrorHandler;
 
 // src/app.ts
 var app = express();

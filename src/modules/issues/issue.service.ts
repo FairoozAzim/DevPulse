@@ -15,12 +15,11 @@ const createIssueIntoDB = async(payload : IIssue, userId : number) => {
     const allowedTypes = ['bug', 'feature_request'];
     const issueStatus = status || 'open';
 
+    //type validation
      if(!allowedTypes.includes(type)){
         throw new AppError(400,"Invalid type! Must be either 'bug' or 'feature_request'")
-
-
     }
-
+    //status validation
     if (!allowedStatus.includes(issueStatus)) {
         throw new AppError(400, "Invalid Status!");
     }
@@ -38,7 +37,8 @@ const getAllIssuesFromDB = async(query : any) => {
       let sql = `
         SELECT * FROM issues
     `;
-
+     
+    //dynamic query adding to the sql query
     const conditions: string[] = [];
     const values: any[] = [];
     if (status) {
@@ -64,7 +64,8 @@ const getAllIssuesFromDB = async(query : any) => {
     if (result.rows.length === 0 ){
         throw new AppError(404,"No Issues Found!")
     }
-
+     
+    //mapping each issue to its reporter_ids
     const issues = result.rows;
     const reporterIds = [
         ...new Set(
@@ -151,13 +152,14 @@ const updateIssueFromDB = async(id : string, payload : IIssue, userId : number, 
 
     const {status : current_status, reporter_id} = issueInfo.rows[0]
 
+    //permission validation
     if (userRole === 'contributor' && reporter_id !== userId) {
         throw new AppError(403, "Permission Denied! You can only update your own issues");
     }
     if (userRole === 'contributor' && current_status !== 'open') {
         throw new AppError(403, "Permission Denied! Issue is already in progress.");
     }
-
+     //workflow check
      const finalStatus = getNextStatus(
         current_status,
         userRole,

@@ -16,12 +16,15 @@ const port = config.port;
 const corsOptions = {
     origin : `http://localhost:${port}`
 }
+
+//middlewares
 app.use(express.json());
 app.use(express.text()); 
 app.use(express.urlencoded({extended :true}));
 app.use(logger);
 app.use(cors());
 
+//routes
 app.use("/api/auth", signupRoute)
 app.use("/api/auth", loginRoute)
 app.use("/api/issues", issueRoute)
