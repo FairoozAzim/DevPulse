@@ -133,7 +133,7 @@ http://localhost:5000
 
 | Field | Type | Description |
 |-------|------|-------------|
-| id | String / UUID | Unique user identifier |
+| id | UUID | Unique user identifier |
 | name | String | User full name |
 | email | String | Unique email |
 | password | String | Hashed password |
@@ -145,7 +145,7 @@ http://localhost:5000
 
 | Field | Type | Description |
 |-------|------|-------------|
-| id | String / UUID | Unique user identifier |
+| id | UUID | Unique user identifier |
 | title | String | Issue Title |
 | description | String | Detailed explanation of the problem or suggestion |
 | type | String | Type of the problem. Must be either 'bug' or 'feature_request'|
