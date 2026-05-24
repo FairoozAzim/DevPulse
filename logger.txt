@@ -46,3 +46,5 @@ Method => DELETE - Time -> 1779553062592 - URL -> /api/issues/50
 Method => DELETE - Time -> 1779553190755 - URL -> /api/issues/50
 
 Method => DELETE - Time -> 1779553464156 - URL -> /api/issues/3
+
+Method => GET - Time -> 1779554433814 - URL -> /api/issues/30

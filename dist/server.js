@@ -143,27 +143,8 @@ var createUser = async (req, res) => {
     });
   }
 };
-var getUsers = async (req, res) => {
-  try {
-    const result = await signupService.getAllUsersFromDB();
-    sendResponse_default(res, {
-      statusCode: 200,
-      success: true,
-      message: "Users retrieved successfully",
-      data: result.rows
-    });
-  } catch (error) {
-    sendResponse_default(res, {
-      statusCode: 500,
-      success: false,
-      message: error.message,
-      data: error
-    });
-  }
-};
 var signupController = {
-  createUser,
-  getUsers
+  createUser
 };
 
 // src/middleware/auth.ts
