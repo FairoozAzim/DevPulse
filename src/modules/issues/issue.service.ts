@@ -129,13 +129,13 @@ const getSingleIssueFromDB = async(id : string) => {
         "role" : role
      }
     
-    const structuredResult = [
+    const structuredResult = 
         { 
             ...rest, 
             reporter : reporter, 
             created_at : created_at, 
             updated_at : updated_at
-        }]
+        }
 
   
     return structuredResult;
